@@ -1,0 +1,78 @@
+body {
+    background: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+}
+
+.main-container {
+    margin-top: 6em;
+    background: black;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.album-item {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 3px solid #000;
+    width: 200px;
+    align-items: center;
+    height: 100%;
+}
+
+.album-image,
+.album-artist,
+.album-title {
+    text-shadow: black 0px 0px 3px;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    margin-bottom: .5rem;
+}
+
+.album-artist {
+    font-weight: bold;
+}
+
+.album-title {}
+
+.album-image img {
+    filter: drop-shadow(black 0 0 8px);
+    width: 160px;
+    height: 160px;
+    border-radius: 5px;
+    border: 0;
+    margin-top: 1rem;
+    margin-bottom: .5rem;
+    transition: transform .3s ease-in-out;
+}
+
+.album-image img:hover {
+    cursor: pointer;
+    transform: rotate(-3deg) scale(1.15, 1.15);
+}
+
+.volume {
+    padding-top: 1em;
+    width: 100%;
+    font-size: 14pt;
+    text-shadow: black 0px 0px 3px;
+    color: #fff;
+    height: 2em;
+    text-align: center;
+    top: 0;
+    position: fixed;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    z-index: 1;
+}
+
+.volume span {
+    transition: transform .2s ease-in-out;
+}
+
+.volume span:hover {
+    cursor: pointer;
+    font-weight: bold;
+}

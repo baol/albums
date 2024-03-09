@@ -1,0 +1,16 @@
+{
+  "name": "albums",
+  "version": "1.0.0",
+  "description": "HEOS TIDAL Albums Player",
+  "main": "app.js",
+  "scripts": {
+    "run": "node app.js"
+  },
+  "author": "Mirko Maischberger <mirko.maischberger@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.3",
+    "heos-api": "^4.0.0"
+  }
+}

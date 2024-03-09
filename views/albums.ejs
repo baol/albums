@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HEOS Tidal Albums</title>
+    <link rel="stylesheet" href="css/albums.css" />
+</head>
+
+<body>
+    <div class="volume">
+        Vol: | <% for (let lvl=10; lvl <=60; lvl+=5) { %>
+            <span onclick="httpGetAsync('/volume?level=<%= lvl %>', console.log)">
+                <%= lvl %>
+            </span> |
+            <% } %>
+    </div>
+    <div class="main-container">
+        <% var keys=Object.keys(albums).sort(); keys.forEach(function(key) { %>
+            <% albums[key].sort((a, b)=> a.name.toLowerCase() > b.name.toLowerCase() ? 1 :
+                -1).forEach(function(album) { %>
+                <%- include('album/show', {album: album}) %>
+                    <% }); %>
+                        <% }); %>
+    </div>
+    <script language="javascript">
+        function httpGetAsync(theUrl, callback) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+            }
+            xmlHttp.open("GET", theUrl, true);
+            xmlHttp.send(null);
+        }
+    </script>
+</body>
+
+</html>
