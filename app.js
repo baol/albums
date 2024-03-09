@@ -31,8 +31,16 @@ app.get('/', (_, res) => {
                         range_start += data.heos.message.parsed.returned;
                         connection.write('browse', 'browse', { sid: tidal_sid, cid: "My Music-Albums", range: range_start + "," + (range_start + page_size - 1) })
                     } else {
-                        galbums = Object.groupBy(albums, ({ artist }) => artist);
-                        res.render("albums.ejs", { albums: galbums })
+                        albums.sort((a, b) => {
+                            if (a.artist < b.artist) return -1;
+                            if (a.artist > b.artist) return 1;
+                            if (a.artist === b.artist) {
+                                if (a.name < b.name) return -1;
+                                if (a.name > b.name) return 1;
+                                return 0;
+                            }
+                        });
+                        res.render("albums.ejs", { albums: albums })
                     }
                 }
             })

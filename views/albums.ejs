@@ -15,12 +15,9 @@
             <% } %>
     </div>
     <div class="main-container">
-        <% var keys=Object.keys(albums).sort(); keys.forEach(function(key) { %>
-            <% albums[key].sort((a, b)=> a.name.toLowerCase() > b.name.toLowerCase() ? 1 :
-                -1).forEach(function(album) { %>
-                <%- include('album/show', {album: album}) %>
-                    <% }); %>
-                        <% }); %>
+        <% albums.forEach(function(album) { %>
+            <%- include('album/show', {album: album}) %>
+                <% }); %>
     </div>
     <script language="javascript">
         function httpGetAsync(theUrl, callback) {
