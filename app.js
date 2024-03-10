@@ -1,7 +1,8 @@
-const heos = require('heos-api')
+const Heos = require('heos-api')
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 7200 });
 const tidal_sid = 10;
 var first_pid = null;
-
 var express = require('express');
 var app = express();
 
@@ -9,19 +10,21 @@ app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.use(express.static('public'))
 
-heos.discoverAndConnect().then(connection => {
+Heos.discoverAndConnect().then(connection => {
     connection.on({ commandGroup: 'system', command: 'get_players' },
         (data) => {
             console.log("Using player: ", data.payload[0].name, data.payload[0].model);
-            first_pid = data.payload[0].pid
+            first_pid = data.payload[0].pid;
         }).write("system", "get_players")
 });
 
-app.get('/', (_, res) => {
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const update_cache = () => {
     var albums = []
     var range_start = 0;
-    const page_size = 100;
-    heos.discoverAndConnect().then(connection => {
+    const page_size = 50;
+    Heos.discoverAndConnect().then(connection => {
         connection
             .on({ commandGroup: 'browse', command: 'browse' }, data => {
                 console.log("browse", data.heos.result, data.heos.message.parsed);
@@ -40,40 +43,58 @@ app.get('/', (_, res) => {
                                 return 0;
                             }
                         });
-                        res.render("albums.ejs", { albums: albums })
+                        cache.set("albums", albums);
                     }
                 }
             })
             .onError(console.log)
             .write('browse', 'browse', { sid: tidal_sid, cid: "My Music-Albums" })
     });
+}
+
+update_cache();
+
+app.get('/', async (_, res) => {
+    update_cache();
+    count = 0;
+    max_polls = 50;
+    ret_albums = cache.get("albums");
+    while (ret_albums == undefined && count < max_polls) {
+        ret_albums = cache.get("albums");
+        await sleep(100);
+        count++;
+    }
+    if (count == max_polls)
+        res.send("Timed out, please wait a few seconds then reload");
+    else
+        res.render("albums.ejs", { albums: ret_albums })
 });
 
 app.get('/play', (req, res) => {
-    heos.discoverAndConnect().then(connection => {
+    Heos.discoverAndConnect().then(connection => {
         connection.on({ commandGroup: 'browse', command: 'add_to_queue' },
             (data) => {
                 console.log("add_to_queue", data.heos.result, data.heos.message.parsed);
+                res.send("Playing album...");
             })
             .write('browse', 'add_to_queue', {
                 pid: first_pid, sid: tidal_sid, aid: 4, cid: req.query.cid
             });
     });
-    res.write("Command queued.");
 });
 
 app.get('/volume', (req, res) => {
-    heos.discoverAndConnect().then(connection => {
+    Heos.discoverAndConnect().then(connection => {
         connection
             .on({ commandGroup: 'player', command: 'set_volume' },
                 (data) => {
                     console.log("set_volume", data.heos.result, data.heos.message.parsed);
+                    res.send("Volume set!");
                 })
             .write('player', 'set_volume', {
                 pid: first_pid, level: req.query.level
             });
     });
-    res.write("Command queued.");
 });
 
 app.listen(3000, () => {
