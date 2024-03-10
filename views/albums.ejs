@@ -9,10 +9,12 @@
 <body>
     <div class="volume">
         Vol: | <% for (let lvl=10; lvl <=60; lvl+=5) { %>
-            <span onclick="httpGetAsync('/volume?level=<%= lvl %>', console.log)">
+            <span onclick="httpGetAsync('/volume?level=<%= lvl %>', notify)">
                 <%= lvl %>
             </span> |
             <% } %>
+                <div id="notification">
+                </div>
     </div>
     <div class="main-container">
         <% albums.forEach(function(album) { %>
@@ -28,6 +30,13 @@
             }
             xmlHttp.open("GET", theUrl, true);
             xmlHttp.send(null);
+        }
+        function notify(message) {
+            if (message != "") {
+                setTimeout(() => { notify("") }, 1000);
+            }
+            var q = document.getElementById("notification");
+            if (q) q.innerHTML = message;
         }
     </script>
 </body>

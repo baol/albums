@@ -1,14 +1,42 @@
 body {
     background: black;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 10pt;
+    font-size: 11pt;
+}
+
+.volume {
+    top: 0;
+    left: 0;
+    position: fixed;
+    z-index: 1;
+    padding: 1em 1em .5em 1em;
+    width: 100%;
+    font-size: 14pt;
+    color: #fff;
+    text-shadow: black 0px 0px 3px;
+    text-align: center;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+.volume span {
+    transition: transform .2s ease-in-out;
+}
+
+.volume span:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#notification {
+    margin-top: 0.5em;
 }
 
 .main-container {
-    margin-top: 6em;
-    background: black;
+    margin: 6em auto 6em auto;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 1rem;
 }
 
@@ -26,7 +54,6 @@ body {
 .album-title {
     text-shadow: black 0px 0px 3px;
     color: #fff;
-    width: 100%;
     text-align: center;
     margin-bottom: .5rem;
 }
@@ -51,28 +78,4 @@ body {
 .album-image img:hover {
     cursor: pointer;
     transform: rotate(-3deg) scale(1.15, 1.15);
-}
-
-.volume {
-    padding-top: 1em;
-    width: 100%;
-    font-size: 14pt;
-    text-shadow: black 0px 0px 3px;
-    color: #fff;
-    height: 2em;
-    text-align: center;
-    top: 0;
-    position: fixed;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    z-index: 1;
-}
-
-.volume span {
-    transition: transform .2s ease-in-out;
-}
-
-.volume span:hover {
-    cursor: pointer;
-    font-weight: bold;
 }

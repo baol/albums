@@ -2,7 +2,7 @@
     <div class="album-item-background" style="background: center/cover url(<%= album.image_url %>);">
         <div class="album-item">
             <div class="album-image">
-                <img onclick="httpGetAsync('/play?cid=<%= album.cid %>', console.log)" src="<%= album.image_url %>" />
+                <img onclick="httpGetAsync('/play?cid=<%= album.cid %>', notify)" src="<%= album.image_url %>" />
             </div>
             <div class="album-artist">
                 <%= album.artist %>
