@@ -32,11 +32,11 @@ app.get('/', (_, res) => {
                         connection.write('browse', 'browse', { sid: tidal_sid, cid: "My Music-Albums", range: range_start + "," + (range_start + page_size - 1) })
                     } else {
                         albums.sort((a, b) => {
-                            if (a.artist < b.artist) return -1;
-                            if (a.artist > b.artist) return 1;
-                            if (a.artist === b.artist) {
-                                if (a.name < b.name) return -1;
-                                if (a.name > b.name) return 1;
+                            if (a.artist.toUpperCase() < b.artist.toUpperCase()) return -1;
+                            if (a.artist.toUpperCase() > b.artist.toUpperCase()) return 1;
+                            if (a.artist.toUpperCase() === b.artist.toUpperCase()) {
+                                if (a.name.toUpperCase() < b.name.toUpperCase()) return -1;
+                                if (a.name.toUpperCase() > b.name.toUpperCase()) return 1;
                                 return 0;
                             }
                         });
