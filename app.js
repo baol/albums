@@ -1,22 +1,19 @@
 const Heos = require('heos-api')
 const NodeCache = require("node-cache");
 const cache = new NodeCache({ stdTTL: 7200 });
-const tidal_sid = 10;
+
+const source_name = "Favorites";
+const source_cid = "My Music-Albums";
+
 var first_pid = null;
+var sources = null;
+var tidal_sid = null;
 var express = require('express');
 var app = express();
 
 app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.use(express.static('public'))
-
-Heos.discoverAndConnect().then(connection => {
-    connection.on({ commandGroup: 'system', command: 'get_players' },
-        (data) => {
-            console.log("Using player: ", data.payload[0].name, data.payload[0].model);
-            first_pid = data.payload[0].pid;
-        }).write("system", "get_players")
-});
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -32,7 +29,7 @@ const update_cache = () => {
                     albums.push(...data.payload);
                     if (data.heos.message.parsed.returned > 0) {
                         range_start += data.heos.message.parsed.returned;
-                        connection.write('browse', 'browse', { sid: tidal_sid, cid: "My Music-Albums", range: range_start + "," + (range_start + page_size - 1) })
+                        connection.write('browse', 'browse', { sid: tidal_sid, cid: source_cid, range: range_start + "," + (range_start + page_size - 1) })
                     } else {
                         albums.sort((a, b) => {
                             if (a.artist.toUpperCase() < b.artist.toUpperCase()) return -1;
@@ -48,11 +45,27 @@ const update_cache = () => {
                 }
             })
             .onError(console.log)
-            .write('browse', 'browse', { sid: tidal_sid, cid: "My Music-Albums" })
+            .write('browse', 'browse', { sid: tidal_sid, cid: source_cid })
     });
 }
 
-update_cache();
+Heos.discoverAndConnect().then(connection => {
+    connection
+        .on({ commandGroup: 'system', command: 'get_players' },
+            (data) => {
+                console.log("Using player: ", data.payload[0].name, data.payload[0].model);
+                first_pid = data.payload[0].pid;
+            })
+        .on({ commandGroup: 'browse', command: 'get_music_sources' },
+            (data) => {
+                sources = Object.groupBy(data.payload, ({ name }) => name);
+                tidal_sid = sources[source_name][0]["sid"];
+                update_cache();
+            }
+        )
+        .write("system", "get_players")
+        .write("browse", "get_music_sources")
+});
 
 app.get('/', async (_, res) => {
     update_cache();
